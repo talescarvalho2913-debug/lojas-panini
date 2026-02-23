@@ -13,6 +13,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
+    <!-- AOS Animations -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -21,16 +25,18 @@
             theme: {
                 extend: {
                     colors: {
+                        'panini-red': '#bc0a31', // Official Panini Red
+                        'panini-gold': '#f6c026',
                         'panini-wine': '#8a1538',
-                        'panini-wine-foreground': '#ffffff',
-                        'panini-gold': '#ffcc00',
-                        'panini-gold-foreground': '#2e2c0e',
-                        'panini-green': '#22c55e',
-                        'panini-green-foreground': '#ffffff',
+                        'panini-green': '#1eb93a',
                     },
                     fontFamily: {
                         'outfit': ['Outfit', 'sans-serif'],
                     },
+                    boxShadow: {
+                        'premium': '0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02)',
+                        'inner-glass': 'inset 0 1px 0 0 rgba(255, 255, 255, 0.1)',
+                    }
                 }
             }
         }
@@ -39,44 +45,26 @@
     <style>
         body {
             font-family: 'Outfit', sans-serif;
-            background-color: #ffffff;
+            background-color: #fcfcfc;
             color: #1a1a1a;
+            overflow-x: hidden;
         }
 
-        .bg-panini-wine {
-            background-color: #8a1538;
-        }
-
-        .text-panini-wine {
-            color: #8a1538;
-        }
-
-        .bg-panini-gold {
-            background-color: #f6c026;
-        }
-
-        /* Adjusted to match original exactly */
-        .text-panini-gold {
-            color: #f6c026;
-        }
-
-        .bg-panini-green {
-            background-color: #1eb93a;
-        }
-
-        .text-panini-green {
-            color: #1eb93a;
+        /* Glassmorphism Effect */
+        .glass-header {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
         }
 
         .timer-badge {
-            background-color: #8a1538;
-            border-radius: 4px;
+            background: linear-gradient(135deg, #bc0a31 0%, #8a1538 100%);
+            border-radius: 8px;
             padding: 8px 16px;
             display: flex;
             align-items: center;
             gap: 8px;
-            min-width: 140px;
-            justify-content: center;
+            box-shadow: 0 4px 6px -1px rgba(188, 10, 49, 0.2);
         }
 
         .pulsing-btn {
@@ -88,37 +76,73 @@
             0%,
             100% {
                 transform: scale(1);
+                box-shadow: 0 10px 15px -3px rgba(30, 185, 58, 0.3);
             }
 
             50% {
-                transform: scale(1.02);
+                transform: scale(1.03);
+                box-shadow: 0 20px 25px -5px rgba(30, 185, 58, 0.4);
             }
+        }
+
+        .floating-cta {
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            background: white;
+            padding: 1rem;
+            border-top: 1px border-gray-100;
+            box-shadow: 0 -10px 15px -3px rgba(0, 0, 0, 0.05);
+        }
+
+        .floating-cta.visible {
+            transform: translateY(0);
+        }
+
+        .kit-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .kit-card:hover {
+            transform: translateY(-4px);
+        }
+
+        /* Scroll Progress Bar */
+        #progress-bar {
+            height: 3px;
+            background: #bc0a31;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 100;
+            width: 0%;
+            transition: width 0.1s;
         }
     </style>
 </head>
 
 <body class="bg-gray-50">
+    <div id="progress-bar"></div>
 
     <!-- Header / Sticky Navigation -->
-    <header class="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+    <header class="sticky top-0 z-50 glass-header border-b border-gray-100 shadow-sm">
         <div class="container mx-auto px-4 py-3 md:py-4 max-w-4xl">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                 <div class="flex justify-center sm:justify-start">
-                    <img alt="Panini" class="h-12 md:h-14 w-auto object-contain"
+                    <img alt="Panini" class="h-10 md:h-12 w-auto object-contain"
                         src="https://app.lojaspanini.online/assets/logo-panini-256-BiVShRJp.png">
                 </div>
                 <div class="flex items-center justify-center gap-2">
                     <div class="timer-badge">
                         <div class="flex flex-col">
-                            <span class="text-white/80 text-[10px] uppercase font-bold leading-none">Encerra em:</span>
+                            <span
+                                class="text-white/80 text-[9px] uppercase font-bold leading-none tracking-tighter">Oferta
+                                expira em:</span>
                             <span id="countdown" class="text-white text-lg font-bold font-mono">15:00</span>
-                        </div>
-                    </div>
-                    <div class="timer-badge">
-                        <div class="flex flex-col">
-                            <span class="text-white/80 text-[10px] uppercase font-bold leading-none">Restam:</span>
-                            <span class="text-white text-lg font-bold">127 <span
-                                    class="text-xs font-normal">Unidades</span></span>
                         </div>
                     </div>
                 </div>
@@ -126,183 +150,186 @@
         </div>
     </header>
 
-    <main class="max-w-[640px] mx-auto bg-white min-h-screen pb-20 shadow-xl">
+    <main class="max-w-[600px] mx-auto bg-white min-h-screen pb-32 shadow-2xl relative">
+        <!-- Official Badge Floating -->
+        <div class="absolute top-4 right-4 z-10" data-aos="fade-left" data-aos-delay="500">
+            <div class="bg-panini-gold p-2 rounded-full shadow-lg border-2 border-white rotate-12">
+                <svg class="h-10 w-10 text-panini-wine" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 1L9 9H1L7 14L5 22L12 17L19 22L17 14L23 9H15L12 1Z" />
+                </svg>
+            </div>
+        </div>
+
         <!-- Hero Section -->
-        <section class="px-4 py-8 md:py-12 text-center">
-            <div class="mb-6">
+        <section class="px-6 py-10 md:py-16 text-center border-b border-gray-50">
+            <div class="mb-8" data-aos="zoom-in">
                 <span
-                    class="inline-block bg-panini-gold text-panini-gold-foreground text-xs md:text-sm font-bold uppercase tracking-widest px-6 py-2 rounded-full border border-yellow-400">
-                    Compra Única por CPF
+                    class="inline-flex items-center gap-2 bg-panini-gold/10 text-panini-wine text-[11px] font-black uppercase tracking-[0.2em] px-5 py-2 rounded-full border border-panini-gold/30">
+                    <span class="relative flex h-2 w-2">
+                        <span
+                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-panini-wine opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-panini-wine"></span>
+                    </span>
+                    Promoção Exclusiva por CPF
                 </span>
             </div>
 
-            <div class="space-y-2 mb-6">
-                <img alt="FIFA 2026" class="h-24 md:h-32 w-auto object-contain mx-auto mb-4"
+            <div class="space-y-2 mb-8" data-aos="fade-up">
+                <img alt="FIFA 2026"
+                    class="h-28 md:h-36 w-auto object-contain mx-auto mb-6 hover:scale-105 transition-transform"
                     src="https://app.lojaspanini.online/assets/fifa26-DBrPmei8.png">
-                <p class="text-xs md:text-sm font-bold text-gray-400 uppercase tracking-[0.3em]">Álbum Oficial</p>
-                <p class="text-xs md:text-sm font-medium text-gray-400 tracking-wider">EUA • Canadá • México</p>
+                <p class="text-[10px] md:text-xs font-black text-gray-400 uppercase tracking-[0.4em] mb-1">Álbum Oficial
+                    de Figurinhas</p>
+                <div class="flex items-center justify-center gap-4 text-[10px] font-bold text-gray-400">
+                    <span>EUA</span>
+                    <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+                    <span>CANADÁ</span>
+                    <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+                    <span>MÉXICO</span>
+                </div>
             </div>
 
-            <h1 class="text-5xl md:text-7xl font-extrabold text-gray-900 mb-6 tracking-tighter">COPA 2026</h1>
+            <h1 class="text-6xl md:text-8xl font-black text-panini-wine mb-8 tracking-tighter" data-aos="fade-up"
+                data-aos-delay="100">COPA 2026</h1>
 
-            <div class="space-y-4 mb-10">
-                <p class="text-lg text-gray-500 max-w-sm mx-auto leading-tight">
-                    O maior evento do futebol mundial está chegando! Garanta seu álbum de capa dura com 30, 60 ou 90
-                    pacotes inclusos.
+            <div class="space-y-4 mb-12" data-aos="fade-up" data-aos-delay="200">
+                <p class="text-lg text-gray-500 max-w-sm mx-auto leading-snug font-medium">
+                    Viva a emoção do maior evento da história! Garanta seu kit completo com <span
+                        class="text-panini-wine font-extrabold underline decoration-panini-gold decoration-4">Álbum Capa
+                        Dura</span> e até 90 pacotes.
                 </p>
-                <p class="text-lg font-bold text-gray-900 uppercase">
-                    Apenas 5.000 unidades disponíveis para o Brasil!
+                <p
+                    class="inline-block text-xs font-black bg-red-50 text-panini-wine px-4 py-2 rounded-lg border border-red-100">
+                    ESTOQUE LIMITADO: ÚLTIMAS 127 UNIDADES NO BRASIL
                 </p>
             </div>
 
-            <div class="flex justify-center">
+            <div class="relative group" data-aos="fade-up" data-aos-delay="300">
+                <div
+                    class="absolute -inset-4 bg-panini-gold/20 rounded-[40px] blur-2xl group-hover:bg-panini-gold/30 transition-colors">
+                </div>
                 <img alt="Kit Colecionador"
-                    class="w-full max-w-md object-contain rounded-2xl shadow-lg border border-gray-100"
+                    class="relative w-full max-w-md object-contain rounded-3xl shadow-premium border border-white hover:scale-[1.02] transition-transform cursor-pointer"
                     src="https://app.lojaspanini.online/assets/1alb3box-vOgp6SlD.webp">
             </div>
         </section>
 
         <!-- Pricing / Kits Section -->
-        <section id="kits" class="px-4 py-10 bg-gray-50 border-y border-gray-200">
-            <h2 class="text-3xl font-extrabold text-center text-gray-900 mb-2">Escolha seu Kit</h2>
-            <p class="text-center text-gray-500 mb-10">Quanto mais pacotes, mais chances de completar o álbum!</p>
+        <section id="kits" class="px-6 py-12 bg-gray-50/50 border-y border-gray-100">
+            <div class="text-center mb-10" data-aos="fade-up">
+                <h2 class="text-4xl font-black text-gray-900 mb-2 tracking-tight">Escolha seu Kit</h2>
+                <p class="text-sm text-gray-500 font-medium">Preços de pré-venda com até 85% de desconto!</p>
+            </div>
 
-            <div class="space-y-4">
+            <div class="space-y-6">
                 <!-- Kit 1 -->
-                <div class="kit-card relative bg-white rounded-2xl border-2 border-red-800 p-4 cursor-pointer transition-all hover:shadow-md"
-                    data-kit="basico">
+                <div class="kit-card relative bg-white rounded-3xl border-2 border-gray-100 p-5 cursor-pointer hover:border-panini-red/30 shadow-sm"
+                    data-kit="basico" data-aos="fade-up">
                     <div
-                        class="absolute -top-3 right-4 bg-panini-green text-white text-[10px] font-bold px-3 py-1 rounded-full">
-                        -53%</div>
-                    <div class="flex items-center gap-4">
+                        class="absolute -top-3 right-6 bg-panini-green text-white text-[10px] font-black px-4 py-1.5 rounded-full shadow-lg">
+                        -53% OFF</div>
+                    <div class="flex items-center gap-5">
                         <div
-                            class="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center shrink-0">
-                            <div class="dot w-3.5 h-3.5 rounded-full bg-transparent"></div>
+                            class="w-7 h-7 rounded-full border-2 border-gray-200 flex items-center justify-center shrink-0 shadow-inner">
+                            <div class="dot w-4 h-4 rounded-full bg-transparent transition-all"></div>
                         </div>
                         <img src="https://app.lojaspanini.online/assets/1alb1box-DhHQnI1N.webp"
-                            class="h-16 w-16 object-contain rounded-xl">
+                            class="h-20 w-20 object-contain rounded-2xl bg-gray-50 p-2 shadow-sm">
                         <div class="flex-1">
-                            <h3 class="font-bold text-sm">Kit Básico</h3>
-                            <p class="text-xs text-gray-500">1 Álbum Capa Dura + 10 Pacotes</p>
-                            <div class="flex gap-2 mt-1">
-                                <span class="bg-gray-100 text-[10px] px-2 py-0.5 rounded-full">70 figurinhas</span>
+                            <h3 class="font-extrabold text-sm text-gray-900 uppercase">Kit Básico</h3>
+                            <p class="text-[11px] text-gray-500 font-medium">Capa Dura + 10 Pacotes</p>
+                            <div class="flex items-center gap-2 mt-2">
                                 <span
-                                    class="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-0.5 rounded-full">Frete
-                                    Grátis</span>
+                                    class="bg-panini-gold/20 text-panini-wine text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-tighter">70
+                                    Figs</span>
+                                <span
+                                    class="bg-green-100 text-green-700 text-[9px] font-black px-2 py-0.5 rounded uppercase">Grátis</span>
                             </div>
                         </div>
                         <div class="text-right">
-                            <p class="text-[10px] text-gray-400 line-through">R$ 84,29</p>
-                            <p class="text-xl font-black text-gray-900 leading-tight">R$ 39,90</p>
-                            <p class="text-[10px] text-gray-500 uppercase">via pix</p>
+                            <p class="text-[11px] text-gray-400 line-through font-bold">R$ 84,29</p>
+                            <p class="text-2xl font-black text-panini-red leading-none">R$ 39,90</p>
+                            <p class="text-[9px] text-gray-400 font-black uppercase mt-1">no pix</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Kit 2 - Featured -->
-                <div class="kit-card relative bg-white rounded-2xl border-2 border-panini-green shadow-xl p-4 cursor-pointer transition-all"
-                    data-kit="iniciante">
+                <div class="kit-card relative bg-white rounded-3xl border-2 border-panini-green p-5 cursor-pointer shadow-xl ring-4 ring-panini-green/10"
+                    data-kit="iniciante" data-aos="fade-up" data-aos-delay="100">
                     <div
-                        class="absolute -top-3 left-1/2 -translate-x-1/2 bg-panini-green text-white text-[10px] font-bold px-6 py-1 rounded-full uppercase tracking-widest">
-                        Mais Vendido</div>
+                        class="absolute -top-4 left-1/2 -translate-x-1/2 bg-panini-wine text-white text-[10px] font-black px-8 py-2 rounded-full uppercase tracking-[0.2em] shadow-xl z-20 border-2 border-white">
+                        CAMPEÃO DE VENDAS</div>
                     <div
-                        class="absolute -top-3 right-4 bg-panini-green text-white text-[10px] font-bold px-3 py-1 rounded-full">
-                        -60%</div>
-                    <div class="flex items-center gap-4 pt-2">
+                        class="absolute -top-3 right-6 bg-panini-red text-white text-[10px] font-black px-4 py-1.5 rounded-full shadow-lg">
+                        O MELHOR CUSTO-BENEFÍCIO</div>
+                    <div class="flex items-center gap-5 pt-4">
                         <div
-                            class="w-6 h-6 rounded-full border-2 border-panini-green flex items-center justify-center shrink-0">
-                            <div class="dot w-3.5 h-3.5 rounded-full bg-panini-green"></div>
+                            class="w-7 h-7 rounded-full border-2 border-panini-green flex items-center justify-center shrink-0 shadow-inner">
+                            <div class="dot w-4 h-4 rounded-full bg-panini-green transition-all"></div>
                         </div>
                         <img src="https://app.lojaspanini.online/assets/1alb1box-DhHQnI1N.webp"
-                            class="h-16 w-16 object-contain rounded-xl">
+                            class="h-20 w-20 object-contain rounded-2xl bg-gray-50 p-2 shadow-sm">
                         <div class="flex-1">
-                            <h3 class="font-bold text-sm">Kit Iniciante</h3>
-                            <p class="text-xs text-gray-500">1 Álbum Capa Dura + 30 Pacotes</p>
-                            <div class="flex gap-2 mt-1">
-                                <span class="bg-gray-100 text-[10px] px-2 py-0.5 rounded-full">210 figurinhas</span>
+                            <h3 class="font-extrabold text-sm text-gray-900 uppercase">Kit Iniciante</h3>
+                            <p class="text-[11px] text-gray-500 font-medium">Capa Dura + 30 Pacotes</p>
+                            <div class="flex items-center gap-2 mt-2">
                                 <span
-                                    class="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-0.5 rounded-full">Frete
-                                    Grátis</span>
+                                    class="bg-panini-gold/20 text-panini-wine text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-tighter">210
+                                    Figs</span>
+                                <span
+                                    class="bg-green-100 text-green-700 text-[9px] font-black px-2 py-0.5 rounded uppercase">Grátis</span>
                             </div>
                         </div>
                         <div class="text-right">
-                            <p class="text-[10px] text-gray-400 line-through">R$ 149,23</p>
-                            <p class="text-xl font-black text-gray-900 leading-tight">R$ 59,90</p>
-                            <p class="text-[10px] text-gray-500 uppercase">via pix</p>
+                            <p class="text-[11px] text-gray-400 line-through font-bold">R$ 149,23</p>
+                            <p class="text-2xl font-black text-panini-red leading-none">R$ 59,90</p>
+                            <p class="text-[9px] text-gray-400 font-black uppercase mt-1">no pix</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Kit 3 -->
-                <div class="kit-card relative bg-white rounded-2xl border-2 border-red-800 p-4 cursor-pointer transition-all hover:shadow-md"
-                    data-kit="campeao">
+                <!-- Kit 4 - Max Savings -->
+                <div class="kit-card relative bg-white rounded-3xl border-2 border-gray-100 p-5 cursor-pointer hover:border-panini-red/30 shadow-sm"
+                    data-kit="colecionador" data-aos="fade-up" data-aos-delay="200">
                     <div
-                        class="absolute -top-3 right-4 bg-panini-green text-white text-[10px] font-bold px-3 py-1 rounded-full">
-                        -74%</div>
-                    <div class="flex items-center gap-4">
+                        class="absolute -top-3 right-6 bg-panini-red text-white text-[10px] font-black px-4 py-1.5 rounded-full shadow-lg animate-pulse">
+                        -85% ECONOMIA MÁXIMA</div>
+                    <div class="flex items-center gap-5">
                         <div
-                            class="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center shrink-0">
-                            <div class="dot w-3.5 h-3.5 rounded-full bg-transparent"></div>
-                        </div>
-                        <img src="https://app.lojaspanini.online/assets/1alb2box-CzpIAZSQ.webp"
-                            class="h-16 w-16 object-contain rounded-xl">
-                        <div class="flex-1">
-                            <h3 class="font-bold text-sm">Kit Campeão</h3>
-                            <p class="text-xs text-gray-500">1 Álbum Capa Dura + 60 Pacotes</p>
-                            <div class="flex gap-2 mt-1">
-                                <span class="bg-gray-100 text-[10px] px-2 py-0.5 rounded-full">420 figurinhas</span>
-                                <span
-                                    class="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-0.5 rounded-full">Frete
-                                    Grátis</span>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-[10px] text-gray-400 line-through">R$ 372,50</p>
-                            <p class="text-xl font-black text-gray-900 leading-tight">R$ 97,90</p>
-                            <p class="text-[10px] text-gray-500 uppercase">via pix</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Kit 4 -->
-                <div class="kit-card relative bg-white rounded-2xl border-2 border-red-800 p-4 cursor-pointer transition-all hover:shadow-md"
-                    data-kit="colecionador">
-                    <div
-                        class="absolute -top-3 right-4 bg-panini-green text-white text-[10px] font-bold px-3 py-1 rounded-full">
-                        -85%</div>
-                    <div class="flex items-center gap-4">
-                        <div
-                            class="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center shrink-0">
-                            <div class="dot w-3.5 h-3.5 rounded-full bg-transparent"></div>
+                            class="w-7 h-7 rounded-full border-2 border-gray-200 flex items-center justify-center shrink-0 shadow-inner">
+                            <div class="dot w-4 h-4 rounded-full bg-transparent transition-all"></div>
                         </div>
                         <img src="https://app.lojaspanini.online/assets/1alb3box-vOgp6SlD.webp"
-                            class="h-16 w-16 object-contain rounded-xl">
+                            class="h-20 w-20 object-contain rounded-2xl bg-gray-50 p-2 shadow-sm">
                         <div class="flex-1">
-                            <h3 class="font-bold text-sm">Kit Colecionador</h3>
-                            <p class="text-xs text-gray-500">1 Álbum Capa Dura + 90 Pacotes</p>
-                            <div class="flex gap-2 mt-1">
-                                <span class="bg-gray-100 text-[10px] px-2 py-0.5 rounded-full">630 figurinhas</span>
+                            <h3 class="font-extrabold text-sm text-gray-900 uppercase">Kit Colecionador</h3>
+                            <p class="text-[11px] text-gray-500 font-medium">Capa Dura + 90 Pacotes</p>
+                            <div class="flex items-center gap-2 mt-2">
                                 <span
-                                    class="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-0.5 rounded-full">Frete
-                                    Grátis</span>
+                                    class="bg-panini-gold/20 text-panini-wine text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-tighter">630
+                                    Figs</span>
+                                <span
+                                    class="bg-green-100 text-green-700 text-[9px] font-black px-2 py-0.5 rounded uppercase">Grátis</span>
                             </div>
                         </div>
                         <div class="text-right">
-                            <p class="text-[10px] text-gray-400 line-through">R$ 796,00</p>
-                            <p class="text-xl font-black text-gray-900 leading-tight">R$ 119,90</p>
-                            <p class="text-[10px] text-gray-500 uppercase">via pix</p>
+                            <p class="text-[11px] text-gray-400 line-through font-bold">R$ 796,00</p>
+                            <p class="text-2xl font-black text-panini-red leading-none">R$ 119,90</p>
+                            <p class="text-[9px] text-gray-400 font-black uppercase mt-1">no pix</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- CTA Button -->
-            <div class="mt-12 text-center">
+            <div class="mt-12 px-6 text-center" data-aos="fade-up">
                 <button id="checkout-btn"
-                    class="pulsing-btn w-full max-w-sm bg-panini-green text-white font-extrabold text-xl py-5 rounded-2xl shadow-xl hover:opacity-90 transition-all uppercase tracking-wide">
+                    class="pulsing-btn w-full bg-panini-green text-white font-black text-2xl py-6 rounded-2xl shadow-2xl hover:brightness-110 transition-all uppercase tracking-wider border-b-4 border-green-700">
                     Garantir meu Kit agora
                 </button>
-                <div class="flex items-center justify-center gap-2 mt-4 text-xs font-semibold text-gray-400">
+                <div
+                    class="flex items-center justify-center gap-2 mt-6 text-[10px] font-black text-gray-400 uppercase tracking-widest">
                     <svg class="h-4 w-4 text-green-500 fill-current" viewBox="0 0 24 24">
                         <path
                             d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
@@ -313,121 +340,138 @@
         </section>
 
         <!-- Features Section -->
-        <section class="px-4 py-12 bg-white">
-            <h2 class="text-2xl font-bold text-center text-gray-900 mb-2">Sobre o Álbum Oficial</h2>
-            <div class="flex justify-center items-center gap-1 mb-8 opacity-60">
+        <section class="px-6 py-16 bg-white overflow-hidden">
+            <h2 class="text-3xl font-black text-center text-gray-900 mb-2 tracking-tight" data-aos="fade-up">Por Dentro
+                do Álbum</h2>
+            <div class="flex justify-center items-center gap-2 mb-10 opacity-60" data-aos="fade-up"
+                data-aos-delay="100">
                 <svg class="h-5 w-5 text-panini-gold fill-current" viewBox="0 0 24 24">
                     <path
                         d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
                 </svg>
-                <span class="text-xs font-bold uppercase">Edição Histórica</span>
+                <span class="text-[10px] font-black uppercase tracking-[0.2em]">Edição Oficial Panini 2026</span>
             </div>
 
-            <div class="grid grid-cols-2 gap-4 mb-10">
-                <div class="bg-gray-50 rounded-2xl p-5 text-center border border-gray-100">
-                    <div class="h-10 w-10 bg-white rounded-lg flex items-center justify-center mx-auto mb-3 shadow-sm">
+            <div class="grid grid-cols-2 gap-4 mb-12">
+                <div class="bg-gray-50 rounded-3xl p-6 text-center border border-gray-100 shadow-sm"
+                    data-aos="fade-right">
+                    <div
+                        class="h-12 w-12 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm border border-gray-50">
                         <svg class="h-6 w-6 text-panini-wine" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253">
                             </path>
                         </svg>
                     </div>
-                    <p class="font-bold text-sm">112 Páginas</p>
-                    <p class="text-[10px] text-gray-400">O maior álbum já produzido</p>
+                    <p class="font-black text-sm text-gray-900">112 PÁGINAS</p>
+                    <p class="text-[10px] text-gray-400 font-bold uppercase mt-1">Recorde Histórico</p>
                 </div>
-                <div class="bg-gray-50 rounded-2xl p-5 text-center border border-gray-100">
-                    <div class="h-10 w-10 bg-white rounded-lg flex items-center justify-center mx-auto mb-3 shadow-sm">
+                <div class="bg-gray-50 rounded-3xl p-6 text-center border border-gray-100 shadow-sm"
+                    data-aos="fade-left">
+                    <div
+                        class="h-12 w-12 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm border border-gray-50">
                         <svg class="h-6 w-6 text-panini-wine" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z">
                             </path>
                         </svg>
                     </div>
-                    <p class="font-bold text-sm">980 Figurinhas</p>
-                    <p class="text-[10px] text-gray-400">Coleção completa mais extensa</p>
+                    <p class="font-black text-sm text-gray-900">980 FIGS</p>
+                    <p class="text-[10px] text-gray-400 font-bold uppercase mt-1">Coleção Gigante</p>
                 </div>
             </div>
 
-            <div class="space-y-4">
-                <div class="flex items-start gap-4 bg-gray-50 rounded-xl p-4 border border-gray-100">
-                    <span class="text-green-500 font-bold text-xl leading-none pt-1">✓</span>
-                    <p class="text-sm font-medium text-gray-700 leading-tight">Primeira Copa do Mundo com 48 seleções
+            <div class="space-y-4" data-aos="fade-up">
+                <div class="flex items-start gap-4 bg-gray-50 rounded-2xl p-5 border border-gray-100">
+                    <div class="bg-panini-green/10 p-1 rounded-full">
+                        <svg class="h-4 w-4 text-panini-green fill-current" viewBox="0 0 24 24">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+                        </svg>
+                    </div>
+                    <p class="text-xs font-bold text-gray-700 leading-tight">Primeira Copa com 48 seleções
                         participantes.</p>
                 </div>
-                <div class="flex items-start gap-4 bg-gray-50 rounded-xl p-4 border border-gray-100">
-                    <span class="text-green-500 font-bold text-xl leading-none pt-1">✓</span>
-                    <p class="text-sm font-medium text-gray-700 leading-tight">Álbum com 112 páginas - recorde histórico
-                        da Panini.</p>
-                </div>
-                <div class="flex items-start gap-4 bg-gray-50 rounded-xl p-4 border border-gray-100">
-                    <span class="text-green-500 font-bold text-xl leading-none pt-1">✓</span>
-                    <p class="text-sm font-medium text-gray-700 leading-tight">Três países-sede unidos: EUA, Canadá e
-                        México.</p>
+                <div class="flex items-start gap-4 bg-gray-50 rounded-2xl p-5 border border-gray-100">
+                    <div class="bg-panini-green/10 p-1 rounded-full">
+                        <svg class="h-4 w-4 text-panini-green fill-current" viewBox="0 0 24 24">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+                        </svg>
+                    </div>
+                    <p class="text-xs font-bold text-gray-700 leading-tight">Papel de gramatura superior para
+                        colecionadores.</p>
                 </div>
             </div>
         </section>
 
         <!-- Trust Section -->
-        <section class="px-4 py-12 bg-gray-50">
-            <h2 class="text-2xl font-bold text-center text-gray-900 mb-10">Por que garantir agora?</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
-                <div class="flex items-start gap-4 bg-white rounded-2xl p-5 shadow-sm">
-                    <div class="bg-panini-wine rounded-xl p-2.5 shrink-0">
+        <section class="px-6 py-16 bg-gray-50/50">
+            <h2 class="text-3xl font-black text-center text-gray-900 mb-12 tracking-tight" data-aos="fade-up">Segurança
+                Absoluta</h2>
+            <div class="grid grid-cols-1 gap-4 mb-10">
+                <div class="flex items-center gap-5 bg-white rounded-3xl p-6 shadow-sm border border-gray-100"
+                    data-aos="fade-up">
+                    <div class="bg-panini-wine rounded-2xl p-3.5 shrink-0 shadow-lg">
                         <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7">
+                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">
                             </path>
                         </svg>
                     </div>
                     <div>
-                        <p class="font-bold text-sm">Desconto de 85% exclusivo</p>
-                        <p class="text-[10px] text-gray-400 capitalize">apenas nesta pré-venda</p>
+                        <p class="font-black text-sm text-gray-900 uppercase">Garantia de Originalidade</p>
+                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Produtos lacrados de
+                            fábrica</p>
                     </div>
                 </div>
-                <div class="flex items-start gap-4 bg-white rounded-2xl p-5 shadow-sm">
-                    <div class="bg-panini-wine rounded-xl p-2.5 shrink-0">
+                <div class="flex items-center gap-5 bg-white rounded-3xl p-6 shadow-sm border border-gray-100"
+                    data-aos="fade-up" data-aos-delay="100">
+                    <div class="bg-panini-wine rounded-2xl p-3.5 shrink-0 shadow-lg">
                         <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                            </path>
                         </svg>
                     </div>
                     <div>
-                        <p class="font-bold text-sm">Entrega Prioritária</p>
-                        <p class="text-[10px] text-gray-400 capitalize">receba antes de todos</p>
+                        <p class="font-black text-sm text-gray-900 uppercase">Reembolso Facilitado</p>
+                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Satisfação ou seu
+                            dinheiro de volta</p>
                     </div>
                 </div>
             </div>
 
-            <div class="flex flex-wrap items-center justify-center gap-6 opacity-40 grayscale">
+            <!-- Payment Icons -->
+            <div class="flex flex-wrap items-center justify-center gap-6 opacity-40 grayscale" data-aos="fade-up">
                 <div class="flex items-center gap-1">
                     <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
                         <path
                             d="M4.1 19.1c.1.3.4.9.4.9l-.4.3c-.3 0-.6-.3-.6-.3l.4-.9c.2 0 .2 0 .2 0zm15.7-14.2s-.1.4-.4.8c-.5.7-1.3 1.2-2.3 1.5-1 .3-1.8.1-2.4-.4-.6-.5-.9-1.2-.8-1.9.1-1 .9-2 2-2.5 1-.6 2.1-.7 2.9-.2.8.5 1.1 1.6 1 2.7zm-4.7-2.1c-.6.3-1 1-1.1 1.6 0 .5.1.9.3 1.2.3.4.7.5 1.1.5.5-.1 1.1-.3 1.5-.7.4-.4.7-.9.7-1.5 0-.5-.1-.9-.4-1.2-.4-.4-.8-.6-1.3-.5-.3.1-.5.3-.8.6z" />
                     </svg>
-                    <span class="text-[10px] font-bold uppercase">Compra Segura</span>
+                    <span class="text-[9px] font-black uppercase">Seguro 256-bit</span>
                 </div>
                 <div class="flex items-center gap-1">
                     <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
                         <path
                             d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm-1-11v4h2v-4h3l-4-4-4 4h3z" />
                     </svg>
-                    <span class="text-[10px] font-bold uppercase">Produto Original</span>
+                    <span class="text-[9px] font-black uppercase">Original Oficial</span>
                 </div>
             </div>
         </section>
 
         <!-- Social Proof / Reviews -->
-        <section class="px-4 py-12 bg-white">
-            <h2 class="text-2xl font-bold text-center text-gray-900 mb-10">O que nossos clientes dizem</h2>
+        <section class="px-6 py-16 bg-white">
+            <h2 class="text-3xl font-black text-center text-gray-900 mb-12 tracking-tight" data-aos="fade-up">Voz dos
+                Colecionadores</h2>
             <div class="space-y-6">
                 <!-- Review 1 -->
-                <div class="bg-gray-50 rounded-3xl p-6 border border-gray-100 shadow-sm">
+                <div class="bg-gray-50 rounded-3xl p-6 border border-gray-100 shadow-sm" data-aos="fade-up">
                     <div class="flex items-center gap-4 mb-4">
                         <img src="https://app.lojaspanini.online/assets/ch2-BURtkCNJ.jpg"
                             class="h-12 w-12 rounded-full object-cover shadow-sm">
                         <div class="flex-1">
                             <p class="font-extrabold text-sm text-gray-900">Carlos Silva</p>
-                            <p class="text-[10px] text-gray-400 font-medium uppercase">São Paulo - SP</p>
+                            <p class="text-[10px] text-gray-400 font-black uppercase tracking-wider">São Paulo - SP</p>
                         </div>
                         <div class="flex gap-0.5">
                             <svg class="h-3 w-3 text-panini-gold fill-current" viewBox="0 0 24 24">
@@ -452,27 +496,34 @@
                             </svg>
                         </div>
                     </div>
-                    <h4 class="font-extrabold text-sm text-gray-900 mb-1">Chegou super rápido!</h4>
+                    <h4 class="font-extrabold text-sm text-gray-900 mb-1 leading-snug">CHEGOU ANTES DO PRAZO!</h4>
                     <p class="text-sm text-gray-500 leading-relaxed italic">
-                        "Comprei na pré-venda da Copa passada e foi incrível. Chegou antes do lançamento oficial e
-                        consegui começar a coleção antes de todo mundo. Super recomendo!"
+                        "Comprei na pré-venda e foi a melhor decisão. O álbum capa dura é impecável e as figurinhas
+                        vieram perfeitamente lacradas. Site 100% confiável."
                     </p>
-                    <div class="flex items-center justify-between mt-5">
+                    <div class="flex items-center justify-between mt-5 pt-4 border-t border-gray-100">
                         <span
-                            class="text-[10px] font-bold text-panini-green uppercase tracking-tighter bg-green-50 px-2 py-0.5 rounded">✓
-                            Compra Verificada</span>
-                        <span class="text-[10px] text-gray-400 font-medium">há 2 dias</span>
+                            class="text-[9px] font-black text-panini-green uppercase tracking-widest flex items-center gap-1">
+                            <svg class="h-3 w-3 fill-current" viewBox="0 0 24 24">
+                                <path
+                                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                            </svg>
+                            Compra Verificada
+                        </span>
+                        <span class="text-[10px] text-gray-300 font-bold">há 2 dias</span>
                     </div>
                 </div>
 
                 <!-- Review 2 -->
-                <div class="bg-gray-50 rounded-3xl p-6 border border-gray-100 shadow-sm">
+                <div class="bg-gray-50 rounded-3xl p-6 border border-gray-100 shadow-sm" data-aos="fade-up"
+                    data-aos-delay="100">
                     <div class="flex items-center gap-4 mb-4">
                         <img src="https://app.lojaspanini.online/assets/ch2-BURtkCNJ.jpg"
                             class="h-12 w-12 rounded-full object-cover shadow-sm">
                         <div class="flex-1">
                             <p class="font-extrabold text-sm text-gray-900">Amanda Costa</p>
-                            <p class="text-[10px] text-gray-400 font-medium uppercase">Rio de Janeiro - RJ</p>
+                            <p class="text-[10px] text-gray-400 font-black uppercase tracking-wider">Rio de Janeiro - RJ
+                            </p>
                         </div>
                         <div class="flex gap-0.5">
                             <svg class="h-3 w-3 text-panini-gold fill-current" viewBox="0 0 24 24">
@@ -497,188 +548,143 @@
                             </svg>
                         </div>
                     </div>
-                    <h4 class="font-extrabold text-sm text-gray-900 mb-1">Melhor preço que encontrei</h4>
+                    <h4 class="font-extrabold text-sm text-gray-900 mb-1 leading-snug">FILHO RADIANTE!</h4>
                     <p class="text-sm text-gray-500 leading-relaxed italic">
-                        "Pesquisei em vários lugares e aqui foi onde encontrei o melhor preço. Ainda veio com frete
-                        grátis! Meu filho ficou muito feliz com o álbum."
+                        "O melhor preço que encontrei. O frete grátis realmente funciona e chegou tudo muito bem
+                        embalado. A qualidade Panini é inquestionável."
                     </p>
-                    <div class="flex items-center justify-between mt-5">
+                    <div class="flex items-center justify-between mt-5 pt-4 border-t border-gray-100">
                         <span
-                            class="text-[10px] font-bold text-panini-green uppercase tracking-tighter bg-green-50 px-2 py-0.5 rounded">✓
-                            Compra Verificada</span>
-                        <span class="text-[10px] text-gray-400 font-medium">há 3 dias</span>
-                    </div>
-                </div>
-
-                <!-- Review 3 -->
-                <div class="bg-gray-50 rounded-3xl p-6 border border-gray-100 shadow-sm">
-                    <div class="flex items-center gap-4 mb-4">
-                        <img src="https://app.lojaspanini.online/assets/ch2-BURtkCNJ.jpg"
-                            class="h-12 w-12 rounded-full object-cover shadow-sm">
-                        <div class="flex-1">
-                            <p class="font-extrabold text-sm text-gray-900">Roberto Almeida</p>
-                            <p class="text-[10px] text-gray-400 font-medium uppercase">Belo Horizonte - MG</p>
-                        </div>
-                        <div class="flex gap-0.5">
-                            <svg class="h-3 w-3 text-panini-gold fill-current" viewBox="0 0 24 24">
+                            class="text-[9px] font-black text-panini-green uppercase tracking-widest flex items-center gap-1">
+                            <svg class="h-3 w-3 fill-current" viewBox="0 0 24 24">
                                 <path
-                                    d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                             </svg>
-                            <svg class="h-3 w-3 text-panini-gold fill-current" viewBox="0 0 24 24">
-                                <path
-                                    d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                            </svg>
-                            <svg class="h-3 w-3 text-panini-gold fill-current" viewBox="0 0 24 24">
-                                <path
-                                    d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                            </svg>
-                            <svg class="h-3 w-3 text-panini-gold fill-current" viewBox="0 0 24 24">
-                                <path
-                                    d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                            </svg>
-                            <svg class="h-3 w-3 text-panini-gold fill-current" viewBox="0 0 24 24">
-                                <path
-                                    d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                            </svg>
-                        </div>
-                    </div>
-                    <h4 class="font-extrabold text-sm text-gray-900 mb-1">Produto original garantido</h4>
-                    <p class="text-sm text-gray-500 leading-relaxed italic">
-                        "Tinha medo de comprar online e vir produto falsificado, mas veio tudo original com selo da
-                        Panini. Álbum de excelente qualidade e figurinhas perfeitas."
-                    </p>
-                    <div class="flex items-center justify-between mt-5">
-                        <span
-                            class="text-[10px] font-bold text-panini-green uppercase tracking-tighter bg-green-50 px-2 py-0.5 rounded">✓
-                            Compra Verificada</span>
-                        <span class="text-[10px] text-gray-400 font-medium">há 4 dias</span>
+                            Compra Verificada
+                        </span>
+                        <span class="text-[10px] text-gray-300 font-bold">há 3 dias</span>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- FAQ Section -->
-        <section class="px-4 py-12 bg-gray-50">
-            <h2 class="text-2xl font-bold text-center text-gray-900 mb-10">Dúvidas Frequentes</h2>
-            <div class="space-y-3">
-                <div
-                    class="faq-item bg-white rounded-2xl p-5 shadow-sm border border-gray-100 cursor-pointer overflow-hidden transition-all">
+        <section class="px-6 py-16 bg-gray-50/50">
+            <h2 class="text-3xl font-black text-center text-gray-900 mb-12 tracking-tight" data-aos="fade-up">Perguntas
+                Comuns</h2>
+            <div class="space-y-4">
+                <div class="faq-item bg-white rounded-3xl p-6 shadow-sm border border-gray-100 cursor-pointer overflow-hidden transition-all hover:border-panini-red/20"
+                    data-aos="fade-up">
                     <div class="flex items-center justify-between gap-4">
-                        <h3 class="font-bold text-sm text-gray-900 leading-tight">Quando meu pedido será entregue?</h3>
+                        <h3 class="font-black text-sm text-gray-900 leading-tight uppercase tracking-tight">Qual o prazo
+                            de entrega?</h3>
                         <svg class="h-4 w-4 text-gray-400 transition-transform duration-300" fill="none"
                             stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7">
                             </path>
                         </svg>
                     </div>
                     <div class="faq-content h-0 opacity-0 transition-all duration-300">
-                        <p class="text-xs text-gray-500 mt-4 leading-relaxed">
-                            Todos os pedidos da pré-venda serão enviados em até 7-15 dias úteis após a confirmação do
-                            pagamento. Você receberá o código de rastreamento por email assim que o pedido for
-                            despachado.
+                        <p class="text-xs text-gray-500 mt-5 leading-relaxed font-medium">
+                            Os pedidos da pré-venda exclusiva são processados com prioridade máxima. O envio ocorre em
+                            até 3-7 dias úteis após a confirmação. Você receberá o código de rastreio em tempo real.
                         </p>
                     </div>
                 </div>
 
-                <div
-                    class="faq-item bg-white rounded-2xl p-5 shadow-sm border border-gray-100 cursor-pointer overflow-hidden transition-all">
+                <div class="faq-item bg-white rounded-3xl p-6 shadow-sm border border-gray-100 cursor-pointer overflow-hidden transition-all hover:border-panini-red/20"
+                    data-aos="fade-up" data-aos-delay="100">
                     <div class="flex items-center justify-between gap-4">
-                        <h3 class="font-bold text-sm text-gray-900 leading-tight">As figurinhas e o álbum são originais?
-                        </h3>
+                        <h3 class="font-black text-sm text-gray-900 leading-tight uppercase tracking-tight">O site é
+                            oficial?</h3>
                         <svg class="h-4 w-4 text-gray-400 transition-transform duration-300" fill="none"
                             stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7">
                             </path>
                         </svg>
                     </div>
                     <div class="faq-content h-0 opacity-0 transition-all duration-300">
-                        <p class="text-xs text-gray-500 mt-4 leading-relaxed">
-                            Sim! Trabalhamos diretamente com distribuidores oficiais. Todos os produtos são 100%
-                            originais Panini, lacrados de fábrica com selo de autenticidade.
+                        <p class="text-xs text-gray-500 mt-5 leading-relaxed font-medium">
+                            Sim! Trabalhamos com estoques originais Panini S.p.A. Todos os produtos possuem selo
+                            holográfico de autenticidade e são enviados com nota fiscal completa.
                         </p>
                     </div>
                 </div>
-
-                <div
-                    class="faq-item bg-white rounded-2xl p-5 shadow-sm border border-gray-100 cursor-pointer overflow-hidden transition-all">
-                    <div class="flex items-center justify-between gap-4">
-                        <h3 class="font-bold text-sm text-gray-900 leading-tight">O frete é realmente grátis?</h3>
-                        <svg class="h-4 w-4 text-gray-400 transition-transform duration-300" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
-                            </path>
-                        </svg>
-                    </div>
-                    <div class="faq-content h-0 opacity-0 transition-all duration-300">
-                        <p class="text-xs text-gray-500 mt-4 leading-relaxed">
-                            Sim! O frete é 100% grátis para todo o Brasil em todos os nossos kits. Não há taxas
-                            escondidas ou custos adicionais.
-                        </p>
-                    </div>
-                </div>
-
-                <div
-                    class="faq-item bg-white rounded-2xl p-5 shadow-sm border border-gray-100 cursor-pointer overflow-hidden transition-all">
-                    <div class="flex items-center justify-between gap-4">
-                        <h3 class="font-bold text-sm text-gray-900 leading-tight">Quais formas de pagamento são aceitas?
-                        </h3>
-                        <svg class="h-4 w-4 text-gray-400 transition-transform duration-300" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
-                            </path>
-                        </svg>
-                    </div>
-                    <div class="faq-content h-0 opacity-0 transition-all duration-300">
-                        <p class="text-xs text-gray-500 mt-4 leading-relaxed">
-                            Aceitamos pagamento via PIX com aprovação instantânea. O PIX é a forma mais rápida e segura
-                            de pagar, e seu pedido é confirmado imediatamente após o pagamento.
-                        </p>
-                    </div>
-                </div>
-                <!-- ... other FAQs ... -->
             </div>
         </section>
 
+        <!-- Floating CTA Mobile -->
+        <div id="floating-cta" class="floating-cta md:hidden">
+            <button onclick="document.getElementById('kits').scrollIntoView({behavior: 'smooth'})"
+                class="pulsing-btn w-full bg-panini-green text-white font-black text-lg py-4 rounded-xl shadow-xl flex items-center justify-center gap-3 active:scale-95 transition-transform">
+                GARANTIR MEU KIT AGORA
+                <svg class="h-5 w-5 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                        d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+            </button>
+        </div>
+
         <!-- Footer -->
-        <footer class="px-4 py-12 bg-white border-t border-gray-100 text-center">
-            <img alt="Panini" class="h-10 w-auto object-contain mx-auto mb-6 grayscale opacity-60"
+        <footer class="px-6 py-16 bg-white border-t border-gray-100 text-center">
+            <img alt="Panini"
+                class="h-8 w-auto object-contain mx-auto mb-8 grayscale opacity-40 hover:opacity-100 transition-opacity"
                 src="https://app.lojaspanini.online/assets/logo-panini-256-BiVShRJp.png">
-            <div class="flex items-center justify-center gap-2 mb-4">
-                <svg class="h-5 w-5 text-green-500 fill-current" viewBox="0 0 24 24">
+            <div class="flex items-center justify-center gap-2 mb-6">
+                <svg class="h-4 w-4 text-green-500 fill-current" viewBox="0 0 24 24">
                     <path
                         d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                 </svg>
-                <span class="text-xs font-black text-gray-400 uppercase tracking-widest">Compra 100% Segura</span>
+                <span class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Conexão Segura SSL
+                    256-BIT</span>
             </div>
-            <p class="text-[10px] text-gray-300 max-w-xs mx-auto leading-tight">
-                © 2026 Panini S.p.A. Todos os direitos reservados. Esta é uma página de oferta exclusiva para
-                colecionadores.
+            <p class="text-[9px] text-gray-300 max-w-xs mx-auto leading-relaxed font-bold uppercase tracking-tighter">
+                © 2026 Panini S.p.A. Todos os direitos reservados. Esta página é operada por parceiros autorizados para
+                distribuição oficial.
             </p>
         </footer>
     </main>
 
     <!-- Project JS -->
     <script>
+        // AOS Initialization
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 100
+        });
+
+        // Scroll Logic: Progress Bar & Floating CTA
+        window.onscroll = function () {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            let scrolled = (winScroll / height) * 100;
+            document.getElementById("progress-bar").style.width = scrolled + "%";
+
+            // Floating CTA Visibility
+            const floatingCta = document.getElementById('floating-cta');
+            if (winScroll > 600) {
+                floatingCta.classList.add('visible');
+            } else {
+                floatingCta.classList.remove('visible');
+            }
+        };
+
         // Countdown Timer Logic
         function startTimer(duration, display) {
-            var timer = duration, minutes, seconds;
+            let timer = duration, minutes, seconds;
             setInterval(function () {
                 minutes = parseInt(timer / 60, 10);
                 seconds = parseInt(timer % 60, 10);
-
                 minutes = minutes < 10 ? "0" + minutes : minutes;
                 seconds = seconds < 10 ? "0" + seconds : seconds;
-
                 display.textContent = minutes + ":" + seconds;
-
-                if (--timer < 0) {
-                    timer = duration;
-                }
+                if (--timer < 0) { timer = duration; }
             }, 1000);
         }
 
         window.onload = function () {
-            var fifteenMinutes = 60 * 15,
+            const fifteenMinutes = 60 * 15,
                 display = document.querySelector('#countdown');
             startTimer(fifteenMinutes, display);
         };
@@ -690,19 +696,16 @@
 
         kitCards.forEach(card => {
             card.addEventListener('click', () => {
-                // Update UI
                 kitCards.forEach(c => {
-                    c.classList.remove('border-panini-green', 'shadow-xl');
-                    c.classList.add('border-primary', 'shadow-sm');
+                    c.classList.remove('border-panini-green', 'shadow-xl', 'ring-4', 'ring-panini-green/10');
+                    c.classList.add('border-gray-100', 'shadow-sm');
                     c.querySelector('.dot').classList.remove('bg-panini-green');
                     c.querySelector('.dot').classList.add('bg-transparent');
                 });
-
-                card.classList.add('border-panini-green', 'shadow-xl');
-                card.classList.remove('border-primary', 'shadow-sm');
+                card.classList.add('border-panini-green', 'shadow-xl', 'ring-4', 'ring-panini-green/10');
+                card.classList.remove('border-gray-100', 'shadow-sm');
                 card.querySelector('.dot').classList.add('bg-panini-green');
                 card.querySelector('.dot').classList.remove('bg-transparent');
-
                 selectedKit = card.dataset.kit;
             });
         });
@@ -712,7 +715,6 @@
             item.addEventListener('click', () => {
                 const content = item.querySelector('.faq-content');
                 const svg = item.querySelector('svg');
-
                 if (content.classList.contains('h-0')) {
                     content.classList.remove('h-0', 'opacity-0');
                     content.classList.add('h-auto', 'opacity-100');
@@ -725,9 +727,12 @@
             });
         });
 
-        // CTA Click
+        // CTA Click Redirect
         checkoutBtn.addEventListener('click', () => {
-            alert('Redirecionando para o Checkout do Kit: ' + selectedKit);
+            checkoutBtn.innerHTML = '<span class="flex items-center gap-2 justify-center">PROCESSANDO... <svg class="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg></span>';
+            setTimeout(() => {
+                window.location.href = "https://pay.lojaspanini.online/checkout/" + selectedKit;
+            }, 800);
         });
     </script>
 </body>
