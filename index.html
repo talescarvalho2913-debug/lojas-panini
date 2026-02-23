@@ -513,6 +513,7 @@
     </main>
 
     <!-- Project JS -->
+    <!-- Project JS -->
     <script>
         // AOS Initialization
         AOS.init({
@@ -523,95 +524,97 @@
 
         // Scroll Logic: Progress Bar & Floating CTA
         window.onscroll = function () {
-            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-            let scrolled = (winScroll / height) * 100;
-            document.getElementById("progress-bar").style.width = scrolled + "%";
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            const progressBar = document.getElementById("progress-bar");
+            if (progressBar) progressBar.style.width = scrolled + "%";
 
-            // Scroll Logic: Progress Bar & Floating CTA
-            window.onscroll = function () {
-                let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-                let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-                let scrolled = (winScroll / height) * 100;
-                document.getElementById("progress-bar").style.width = scrolled + "%";
-
-                const floatingCta = document.getElementById('floating-cta');
+            const floatingCta = document.getElementById('floating-cta');
+            if (floatingCta) {
                 if (winScroll > 800) {
                     floatingCta.classList.add('visible');
                 } else {
                     floatingCta.classList.remove('visible');
                 }
-            };
+            }
+        };
 
-            // Kit Selection Logic
-            let selectedKit = 'iniciante';
-            const kitCards = document.querySelectorAll('.kit-card');
+        // Kit Selection Logic
+        let selectedKit = 'iniciante';
+        const kitCards = document.querySelectorAll('.kit-card');
 
-            kitCards.forEach(card => {
-                card.addEventListener('click', () => {
-                    kitCards.forEach(c => {
-                        c.classList.remove('selected');
-                        const dot = c.querySelector('.dot');
+        kitCards.forEach(card => {
+            card.addEventListener('click', () => {
+                kitCards.forEach(c => {
+                    c.classList.remove('selected');
+                    const dot = c.querySelector('.dot');
+                    if (dot) {
                         dot.classList.remove('bg-panini-green');
                         dot.classList.add('bg-transparent');
-                    });
-                    card.classList.add('selected');
-                    const activeDot = card.querySelector('.dot');
-                    activeDot.classList.remove('bg-transparent');
-                    activeDot.classList.add('bg-panini-green');
-                    selectedKit = card.dataset.kit;
-                });
-            });
-
-            // FAQ Toggle Logic
-            document.querySelectorAll('.faq-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    const content = item.querySelector('.faq-content');
-                    const svg = item.querySelector('svg');
-                    if (content.style.height === 'auto' || content.classList.contains('active')) {
-                        content.style.height = '0';
-                        content.classList.remove('active');
-                        content.style.opacity = '0';
-                        svg.style.transform = 'rotate(0deg)';
-                    } else {
-                        content.style.height = 'auto';
-                        content.classList.add('active');
-                        content.style.opacity = '1';
-                        svg.style.transform = 'rotate(180deg)';
                     }
                 });
+                card.classList.add('selected');
+                const activeDot = card.querySelector('.dot');
+                if (activeDot) {
+                    activeDot.classList.remove('bg-transparent');
+                    activeDot.classList.add('bg-panini-green');
+                }
+                selectedKit = card.dataset.kit;
             });
+        });
 
-            // Checkout Button Logic
-            const checkoutBtn = document.getElementById('checkout-btn');
-            const floatBtn = document.getElementById('float-checkout-btn');
+        // FAQ Toggle Logic
+        document.querySelectorAll('.faq-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const content = item.querySelector('.faq-content');
+                const svg = item.querySelector('svg');
+                if (content.style.height === 'auto' || content.classList.contains('active')) {
+                    content.style.height = '0';
+                    content.classList.remove('active');
+                    content.style.opacity = '0';
+                    if (svg) svg.style.transform = 'rotate(0deg)';
+                } else {
+                    content.style.height = 'auto';
+                    content.classList.add('active');
+                    content.style.opacity = '1';
+                    if (svg) svg.style.transform = 'rotate(180deg)';
+                }
+            });
+        });
 
-            function handleCheckout() {
+        // Checkout Button Logic
+        const checkoutBtn = document.getElementById('checkout-btn');
+        const floatBtn = document.getElementById('float-checkout-btn');
+
+        function handleCheckout() {
+            if (checkoutBtn) {
                 checkoutBtn.innerHTML = '<span class="flex items-center justify-center gap-3">PROCESSANDO... <svg class="animate-spin h-6 w-6 text-white" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg></span>';
-                setTimeout(() => {
-                    window.location.href = "https://pay.lojaspanini.online/checkout/" + selectedKit;
-                }, 800);
             }
+            setTimeout(() => {
+                window.location.href = "https://pay.lojaspanini.online/checkout/" + selectedKit;
+            }, 800);
+        }
 
-            if (checkoutBtn) checkoutBtn.addEventListener('click', handleCheckout);
-            if (floatBtn) floatBtn.addEventListener('click', handleCheckout);
+        if (checkoutBtn) checkoutBtn.addEventListener('click', handleCheckout);
+        if (floatBtn) floatBtn.addEventListener('click', handleCheckout);
 
-            // Timer Logic
-            function startTimer(duration, display) {
-                let timer = duration, minutes, seconds;
-                setInterval(function () {
-                    minutes = parseInt(timer / 60, 10);
-                    seconds = parseInt(timer % 60, 10);
-                    minutes = minutes < 10 ? "0" + minutes : minutes;
-                    seconds = seconds < 10 ? "0" + seconds : seconds;
-                    display.textContent = minutes + ":" + seconds;
-                    if (--timer < 0) { timer = duration; }
-                }, 1000);
-            }
+        // Timer Logic
+        function startTimer(duration, display) {
+            let timer = duration, minutes, seconds;
+            setInterval(function () {
+                minutes = parseInt(timer / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+                if (display) display.textContent = minutes + ":" + seconds;
+                if (--timer < 0) { timer = duration; }
+            }, 1000);
+        }
 
-            window.onload = function () {
-                startTimer(60 * 15, document.querySelector('#countdown'));
-            };
+        window.onload = function () {
+            startTimer(60 * 15, document.querySelector('#countdown'));
+        };
     </script>
 </body>
 
